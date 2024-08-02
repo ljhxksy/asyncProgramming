@@ -5,6 +5,8 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.stopwatchRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = StopwatchAdapter(stopwatches, this)
+        adapter = StopwatchAdapter(stopwatches, CoroutineScope(Dispatchers.Main))
         recyclerView.adapter = adapter
 
         findViewById<Button>(R.id.addStopwatchButton).setOnClickListener {

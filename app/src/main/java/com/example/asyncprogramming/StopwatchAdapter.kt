@@ -1,7 +1,4 @@
 package com.example.asyncprogramming
-
-import android.content.ContentValues.TAG
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +9,8 @@ import kotlinx.coroutines.*
 
 class StopwatchAdapter(
     private val stopwatches: List<Stopwatch>,
-    private val coroutineScope: MainActivity
+    private val coroutineScope: CoroutineScope
 ) : RecyclerView.Adapter<StopwatchAdapter.StopwatchViewHolder>() {
-
-    private var job: Job? = null
 
     inner class StopwatchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val timeTextView: TextView = view.findViewById(R.id.timeTextView)
@@ -53,17 +48,11 @@ class StopwatchAdapter(
         return String.format("%02d:%02d.%02d", minutes, seconds, milliseconds)
     }
 
-
     private fun startStopwatch(stopwatch: Stopwatch, holder: StopwatchViewHolder) {
-        if (stopwatch.isRunning) {
-            stopwatch.isRunning = false
-            holder.startButton.text = "Resume"
-            return
-        }
         stopwatch.isRunning = true
         holder.startButton.text = "Pause"
 
-        job = CoroutineScope(Dispatchers.Main).launch {
+        stopwatch.job = coroutineScope.launch {
             while (stopwatch.isRunning) {
                 delay(10)
                 stopwatch.timeInMillis += 10
@@ -81,7 +70,7 @@ class StopwatchAdapter(
     private fun resetStopwatch(stopwatch: Stopwatch, holder: StopwatchViewHolder) {
         pauseStopwatch(stopwatch, holder)
         stopwatch.timeInMillis = 0
-        holder.timeTextView.text = "00:00.00"
+        holder.timeTextView.text = formatTime(stopwatch.timeInMillis)
         holder.startButton.text = "Start"
     }
 }
